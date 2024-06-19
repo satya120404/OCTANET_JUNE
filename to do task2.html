@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <style>
+        /* styles.css */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            width: 80%;
+            margin: 40px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #add-task-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #task-name, #task-date, #task-time {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #add-task-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        #add-task-btn:hover {
+            background-color: #3e8e41;
+        }
+
+        #task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #task-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #task-list li:last-child {
+            border-bottom: none;
+        }
+
+        .completed {
+            text-decoration: line-through;
+        }
+
+        .edit-btn, .delete-btn {
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .edit-btn:hover, .delete-btn:hover {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Todo App</h1>
+        <form id="add-task-form" onsubmit="return false;">
+            <input type="text" id="task-name" placeholder="Task Name">
+            <input type="date" id="task-date" placeholder="Task Date">
+            <input type="time" id="task-time" placeholder="Task Time">
+            <button id="add-task-btn">Add Task</button>
+        </form>
+        <ul id="task-list">
+            <!-- Tasks will be displayed here -->
+        </ul>
+    </div>
+
+    <script>
+        let tasks = [];
+
+        // Add event listener to the add task button
+        document.getElementById('add-task-btn').addEventListener('click', addTask);
+
+        // Add event listener to the task list
+        document.getElementById('task-list').addEventListener('click', handleTaskClick);
+
+        // Function to add a task
+        function addTask() {
+            let taskName = document.getElementById('task-name').value;
+            let taskDate = document.getElementById('task-date').value;
+            let taskTime = document.getElementById('task-time').value;
+
+            if (taskName && taskDate && taskTime) {
+                let task = {
+                    name: taskName,
+                    date: taskDate,
+                    time: taskTime,
+                    completed: false
+                };
+
+                tasks.push(task);
+
+                // Clear the form
+                document.getElementById('task-name').value = '';
+                document.getElementById('task-date').value = '';
+                document.getElementById('task-time').value = '';
+
+                // Update the task list
+                updateTaskList();
+            }
+        }
+
+        // Function to handle task list clicks
+        function handleTaskClick(event) {
+            if (event.target.tagName === 'LI') {
+                let taskIndex = Array.from(event.target.parentNode.children).indexOf(event.target);
+
+                if (taskIndex !== -1) {
+                    tasks[taskIndex].completed = !tasks[taskIndex].completed;
+
+                    // Update the task list
+                    updateTaskList();
+                }
+            } else if (event.target.classList.contains('edit-btn')) {
+                let taskIndex = Array.from(event.target.parentNode.parentNode.children).indexOf(event.target.parentNode);
+
+                if (taskIndex !== -1) {
+                    editTask(taskIndex);
+                }
+            } else if (event.target.classList.contains('delete-btn')) {
+                let taskIndex = Array.from(event.target.parentNode.parentNode.children).indexOf(event.target.parentNode);
+
+                if (taskIndex !== -1) {
+                    deleteTask(taskIndex);
+                }
+            }
+        }
+
+        // Function to edit a task
+        function editTask(index) {
+            let task = tasks[index];
+
+            document.getElementById('task-name').value = task.name;
+            document.getElementById('task-date').value = task.date;
+            document.getElementById('task-time').value = task.time;
+
+            tasks.splice(index, 1);
+
+            updateTaskList();
+        }
+
+        // Function to delete a task
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+
+            updateTaskList();
+        }
+
+        // Function to update the task list
+        function updateTaskList() {
+            let taskListHTML = '';
+
+            tasks.forEach((task, index) => {
+                let taskHTML = `<li${task.completed ? ' class="completed"' : ''}>${task.name} (${task.date} ${task.time}) <button class="edit-btn">Edit</button> <button class="delete-btn">Delete</button></li>`;
+
+                taskListHTML += taskHTML;
+            });
+
+            document.getElementById('task-list').innerHTML = taskListHTML;
+        }
+    </script>
+</body>
+</html>
